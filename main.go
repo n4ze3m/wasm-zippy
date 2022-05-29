@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"syscall/js"
+	"time"
 )
 
 type ZipFile struct {
@@ -54,17 +55,21 @@ func createZipfile(input string) {
 	data := b.Bytes()
 	fmt.Println("we have", len(data), "bytes to send")
 
+	fileName := "zippy-" + time.Now().Format("2006-01-02-15-04-05") + ".zip"
 	zipFile := js.Global().Get("document").
 		Call("createElement", "a")
-		// add innter text
-	// add download text not use bota
 	zipFile.Set("href", "data:application/zip;base64,"+base64.StdEncoding.EncodeToString(data))
-	zipFile.Set("download", "zipfile.zip")
-	zipFile.Call("click")
+	zipFile.Set("download", fileName)
+	zipFile.Set("innerHTML", fmt.Sprintf("%s &nbsp; %s", `<i class="fas fa-file-archive"></i>`, fileName))
+	// add class to zip file
+	zipFile.Set("className", "button is-success is-fullwidth mb-3")
+	btnHub := js.Global().Get("document").
+		Call("getElementById", "btnHub")
+	btnHub.Call("appendChild", zipFile)
 }
 
 func wasmWrapper() js.Func {
-	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+	return js.FuncOf(func(_ js.Value, args []js.Value) interface{} {
 		input := args[0].String()
 		createZipfile(input)
 		return nil

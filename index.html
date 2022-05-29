@@ -1,71 +1,155 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+    />
+    <title>Zippy 🤐 - Create Zip Files</title>
+  </head>
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>
-        Test
-    </title>
-</head>
-  
-<body>
-    <div id="status"></div>
-    <input type="file" id="files"  multiple="multiple" />
-    <button id="zip">Zip</button>
-    <div id="downloadBtn"></button>
-</body>
-<script src="/wasm_exec.js"></script>
-<script>
+  <style>
+    body {
+      font-family: "Montserrat", sans-serif;
+    }
+
+    .logo-text {
+      color: white;
+      font-size: 1.5em;
+      font-weight: bold;
+      margin-bottom: 0;
+    }
+
+  </style>
+
+  <body>
+    <nav
+      class="navbar is-dark has-shadow"
+      role="navigation"
+      aria-label="main navigation"
+    >
+      <div class="navbar-brand">
+        <a class="navbar-item" href="#">
+          <div class="is-inline">
+            <h3 class="logo-text" style="display: inline">Zippy 🤐</h3>
+            <span class="tag is-normal"> v0.0.1 </span>
+          </div>
+        </a>
+      </div>
+    </nav>
+    <main class="p-6 m-2 container" id="main">
+      <div class="columns is-centered">
+        <div class="column is-half">
+          <div id="status"></div>
+
+          <div class="file has-name is-boxed is-fullwidth">
+            <label class="file-label">
+              <input
+                class="file-input"
+                type="file"
+                id="files"
+                multiple="multiple"
+              />
+              <span class="file-cta is-center">
+                <span class="file-icon">
+                  <i class="fas fa-upload"></i>
+                </span>
+                <span class="file-label"> Choose files to zip... </span>
+              </span>
+              <div id="filenames"></div>
+            </label>
+          </div>
+          <div id="btnHub">
+            <button class="button is-info my-3 is-fullwidth" id="zip" disabled>
+              Create Zip File
+            </button>
+          </div>
+          <p>
+            Zippy is a simple WebAssembly tool that allows you to create zip files from brower. You can find the source code on my 
+             <a href="https://github.com/n4ze3m/wasm-zippy">GitHub</a>.
+          </p>
+        </div>
+      </div>
+    </main>
+  </body>
+  <script src="/wasm_exec.js"></script>
+  <script>
     const go = new Go();
-    WebAssembly.instantiateStreaming(fetch("zippy.wasm"), go.importObject).then(
-        (result) => {
-            go.run(result.instance);
-            document.getElementById("status").innerHTML = "WASM Loaded";
-        }
-    ).catch((err) => {
-        document.getElementById("status").innerHTML = "WASM Failed to Load";
+    WebAssembly.instantiateStreaming(fetch("zippy.wasm"), go.importObject)
+      .then((result) => {
+        go.run(result.instance);
+        document.getElementById("zip").disabled = false;
+      })
+      .catch((err) => {
+        document.getElementById(
+          "status"
+        ).innerHTML = `<article class="message mb-3  is-danger"><div class="message-header"><p>WASM not loaded</p></div></article>`;
+      });
+    // add listener to the file input and add filenames to the list
+    document.getElementById("files").addEventListener("change", function (e) {
+      var files = e.target.files;
+      var filenames = document.getElementById("filenames");
+      if (filenames?.innerHTML) {
+        filenames.innerHTML = "";
+      }
+      for (var i = 0; i < files.length; i++) {
+        filenames.innerHTML += `<span class="file-name">${files[i].name}</span>`;
+      }
     });
 
-    document.getElementById("zip").addEventListener("click", function(e) {
-        // Get the selected files from the input.
-        var files = document.getElementById("files").files;
-        var count = files.length;
-        // get files bytearray and name
-        var filesArr = [];
-        for (var i = 0; i < files.length; i++) {
-            var file = files[i];
-            var fileName = file.name;
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                // convert file to array buffer
-                var fileArray = new Uint8Array(e.target.result);
-                // convert array buffer to base64
-                var fileBase64 = ''
-                for (var i = 0; i < fileArray.length; i++) {
-                    fileBase64 += String.fromCharCode(fileArray[i]);
-                }
-                
+    document.getElementById("zip").addEventListener("click", function (e) {
+      // Get the selected files from the input.
+      var files = document.getElementById("files").files;
+      var count = files.length;
+      if (count === 0) {
+        alert("No files selected");
+        return;
+      }
+      // get files bytearray and name
+      var filesArr = [];
+      for (var i = 0; i < files.length; i++) {
+        var file = files[i];
+        var fileName = file.name;
+        var reader = new FileReader();
+        reader.onload = function (e) {
+          // convert file to array buffer
+          var fileArray = new Uint8Array(e.target.result);
+          // convert array buffer to base64
+          var fileBase64 = "";
+          for (var i = 0; i < fileArray.length; i++) {
+            fileBase64 += String.fromCharCode(fileArray[i]);
+          }
 
-                // Uint8Array
-                // console.log(fileBase64)
-                filesArr.push({
-                    name: e.target.fileName,
-                    data: btoa(fileBase64)
-                });
-                count--;
-                if(count ===0) {
-                    // console.log(JSON.stringify(filesArr))
-                    Zippy(JSON.stringify(filesArr));
-                }
-            };
-            reader.fileName =fileName
-            reader.readAsArrayBuffer(file);
-        }
+          // Uint8Array
+          // console.log(fileBase64)
+          filesArr.push({
+            name: e.target.fileName,
+            data: btoa(fileBase64),
+          });
+          count--;
+          if (count === 0) {
+            // console.log(JSON.stringify(filesArr))
+            Zippy(JSON.stringify(filesArr));
+          }
+        };
+        reader.fileName = fileName;
+        reader.readAsArrayBuffer(file);
+      }
     });
 
     // add listiner
-</script>
-
+  </script>
 </html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        Test
+    </title>
+</head>
+  
+<body>
+    <div id="status"></div>
+    <input type="file" id="files"  multiple="multiple" />
+    <button id="zip">Zip</button>
+    <div id="downloadBtn"></button>
+</body>
+<script src="/wasm_exec.js"></script>
+<script>
+    const go = new Go();
+    WebAssembly.instantiateStreaming(fetch("zippy.wasm"), go.importObject).then(
+        (result) => {
+            go.run(result.instance);
+            document.getElementById("status").innerHTML = "WASM Loaded";
+        }
+    ).catch((err) => {
+        document.getElementById("status").innerHTML = "WASM Failed to Load";
+    });
+
+    document.getElementById("zip").addEventListener("click", function(e) {
+        // Get the selected files from the input.
+        var files = document.getElementById("files").files;
+        var count = files.length;
+        // get files bytearray and name
+        var filesArr = [];
+        for (var i = 0; i < files.length; i++) {
+            var file = files[i];
+            var fileName = file.name;
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                // convert file to array buffer
+                var fileArray = new Uint8Array(e.target.result);
+                // convert array buffer to base64
+                var fileBase64 = ''
+                for (var i = 0; i < fileArray.length; i++) {
+                    fileBase64 += String.fromCharCode(fileArray[i]);
+                }
+                
+
+                // Uint8Array
+                // console.log(fileBase64)
+                filesArr.push({
+                    name: e.target.fileName,
+                    data: btoa(fileBase64)
+                });
+                count--;
+                if(count ===0) {
+                    // console.log(JSON.stringify(filesArr))
+                    Zippy(JSON.stringify(filesArr));
+                }
+            };
+            reader.fileName =fileName
+            reader.readAsArrayBuffer(file);
+        }
+    });
+
+    // add listiner
+</script>
+
+</html>

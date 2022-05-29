@@ -85,10 +85,10 @@
       </div>
     </main>
   </body>
-  <script src="/public/wasm_exec.js"></script>
+  <script src="/wasm_exec.js"></script>
   <script>
     const go = new Go();
-    WebAssembly.instantiateStreaming(fetch("public/zippy.wasm"), go.importObject)
+    WebAssembly.instantiateStreaming(fetch("zippy.wasm"), go.importObject)
       .then((result) => {
         go.run(result.instance);
         document.getElementById("zip").disabled = false;

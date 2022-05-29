@@ -74,7 +74,7 @@
           </div>
           <div id="btnHub">
             <button class="button is-info my-3 is-fullwidth" id="zip" disabled>
-              Create Zip File
+            Zip Files
             </button>
           </div>
           <p>
@@ -85,10 +85,10 @@
       </div>
     </main>
   </body>
-  <script src="/wasm_exec.js"></script>
+  <script src="/public/wasm_exec.js"></script>
   <script>
     const go = new Go();
-    WebAssembly.instantiateStreaming(fetch("zippy.wasm"), go.importObject)
+    WebAssembly.instantiateStreaming(fetch("public/zippy.wasm"), go.importObject)
       .then((result) => {
         go.run(result.instance);
         document.getElementById("zip").disabled = false;

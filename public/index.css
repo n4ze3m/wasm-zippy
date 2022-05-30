@@ -1,0 +1,13 @@
+body {
+  font-family: "Montserrat", sans-serif;
+}
+
+.logo-text {
+  color: white;
+  font-size: 1.5em;
+  font-weight: bold;
+  margin-bottom: 0;
+}
+.bmc-btn {
+  height: 50px !important;
+}

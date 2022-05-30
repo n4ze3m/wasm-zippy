@@ -21,19 +21,7 @@
     <title>Zippy 🤐 - Create Zip Files</title>
   </head>
 
-  <style>
-    body {
-      font-family: "Montserrat", sans-serif;
-    }
-
-    .logo-text {
-      color: white;
-      font-size: 1.5em;
-      font-weight: bold;
-      margin-bottom: 0;
-    }
-
-  </style>
+  <link rel="stylesheet" href="index.css" />
 
   <body>
     <nav
@@ -45,9 +33,46 @@
         <a class="navbar-item" href="#">
           <div class="is-inline">
             <h3 class="logo-text" style="display: inline">Zippy 🤐</h3>
-            <span class="tag is-normal"> v0.0.2 </span>
+            <span class="tag is-normal"> v0.0.3 </span>
           </div>
         </a>
+        <div class="navbar-burger" data-target="navbarExampleTransparentExample">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+      <div id="navbarExampleTransparentExample" class="navbar-menu">
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <div class="field is-grouped">
+            <!-- <p class="control">
+              <a class="bd-tw-button button" data-social-network="Twitter" data-social-action="tweet" data-social-target="https://bulma.io" target="_blank" href="https://twitter.com/intent/tweet?text=Bulma: a modern CSS framework based on Flexbox&amp;hashtags=bulmaio&amp;url=https://bulma.io&amp;via=jgthms">
+                <span class="icon">
+                  <i class="fab fa-twitter"></i>
+                </span>
+                <span>
+                  Tweet
+                </span>
+              </a>
+            </p> -->
+            <p class="control">
+              <script
+              type="text/javascript"
+              src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js"
+              data-name="bmc-button"
+              data-slug="n4ze3m"
+              data-color="#5F7FFF"
+              data-emoji=""
+              data-font="Poppins"
+              data-text="Buy me a coffee"
+              data-outline-color="#000000"
+              data-font-color="#ffffff"
+              data-coffee-color="#FFDD00"
+            ></script>
+            </p>
+          </div>
+        </div>
       </div>
     </nav>
     <main class="mt-6 mx-3 container" id="main">
@@ -72,73 +97,29 @@
               <div id="filenames"></div>
             </label>
           </div>
+          <div class="select my-2 is-fullwidth">
+            <select id="archiveType">
+              <option value="zip">Zip</option>
+              <option value="tar.gz">TAR.GZ</option>
+            </select>
+          </div>
           <div id="btnHub">
-            <button class="button is-info my-3 is-fullwidth" id="zip" disabled>
-            Create Zip File
+            <button class="button is-info mb-3 is-fullwidth" id="zip" disabled>
+              Start Archiving
             </button>
           </div>
+
           <p>
-            Zippy is a simple WebAssembly tool that allows you to create zip files from brower. You can find the source code on my 
-             <a href="https://github.com/n4ze3m/wasm-zippy">GitHub</a>.
+            Zippy is a simple WebAssembly tool that allows you to create
+            archives files like zip, tar.gz etc from Browser. It is open source
+            and available on my
+            <a href="https://github.com/n4ze3m/wasm-zippy">GitHub</a>
+            repository.
           </p>
         </div>
       </div>
     </main>
   </body>
   <script src="/wasm_exec.js"></script>
-  <script>
-    const go = new Go();
-    WebAssembly.instantiateStreaming(fetch("zippy.wasm"), go.importObject)
-      .then((result) => {
-        go.run(result.instance);
-        document.getElementById("zip").disabled = false;
-      })
-      .catch((err) => {
-        document.getElementById(
-          "status"
-        ).innerHTML = `<article class="message mb-3  is-danger"><div class="message-header"><p>WASM not loaded</p></div></article>`;
-      });
-    document.getElementById("files").addEventListener("change", function (e) {
-      var files = e.target.files;
-      var filenames = document.getElementById("filenames");
-      if (filenames?.innerHTML) {
-        filenames.innerHTML = "";
-      }
-      for (var i = 0; i < files.length; i++) {
-        filenames.innerHTML += `<span class="file-name">${files[i].name}</span>`;
-      }
-    });
-
-    document.getElementById("zip").addEventListener("click", function (e) {
-      var files = document.getElementById("files").files;
-      var count = files.length;
-      if (count === 0) {
-        alert("No files selected");
-        return;
-      }
-      var filesArr = [];
-      for (var i = 0; i < files.length; i++) {
-        var file = files[i];
-        var fileName = file.name;
-        var reader = new FileReader();
-        reader.onload = function (e) {
-          var fileArray = new Uint8Array(e.target.result);
-          var fileBase64 = "";
-          for (var i = 0; i < fileArray.length; i++) {
-            fileBase64 += String.fromCharCode(fileArray[i]);
-          }
-          filesArr.push({
-            name: e.target.fileName,
-            data: btoa(fileBase64),
-          });
-          count--;
-          if (count === 0) {
-            Zippy(JSON.stringify(filesArr));
-          }
-        };
-        reader.fileName = fileName;
-        reader.readAsArrayBuffer(file);
-      }
-    });
-  </script>
+  <script src="/main.js"></script>
 </html>

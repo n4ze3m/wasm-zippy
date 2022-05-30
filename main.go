@@ -8,6 +8,6 @@ import (
 
 func main() {
 	// create zip file
-	js.Global().Set("Zippy", zippy.CreateZipFile())
+	js.Global().Set("Zippy", zippy.CreateArchiveFile())
 	<-make(chan bool)
 }

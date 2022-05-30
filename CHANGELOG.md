@@ -3,6 +3,7 @@
 - Added TAR archive support
 - Added select option
 - Mime type is now updated for tar and zip
+- Removed bug with tar and zip 
 
 
 ## 0.0.2

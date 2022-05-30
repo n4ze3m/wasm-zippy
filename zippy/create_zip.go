@@ -48,5 +48,5 @@ func createZipfile(zipFiles []ZipFile) {
 	fmt.Println("we have", len(data), "bytes to send")
 
 	fileName := "zippy-" + time.Now().Format("2006-01-02-15-04-05") + ".zip"
-	utils.GenerateDownloadButton(fileName, data)
+	utils.GenerateDownloadButton(fileName, data, "zip")
 }

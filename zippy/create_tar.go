@@ -52,5 +52,5 @@ func createTarFile(zipFiles []ZipFile, extension string) {
 	fmt.Println("we have", len(data), "bytes to send")
 
 	fileName := "zippy-" + time.Now().Format("2006-01-02-15-04-05") + "." + extension
-	utils.GenerateDownloadButton(fileName, data)
+	utils.GenerateDownloadButton(fileName, data, "x-tar")
 }
